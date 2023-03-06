@@ -52,6 +52,22 @@ const HomePage = () => {
     setLoadingState(DATA_STATES.loaded);
   };
 
+  const updateOrderDrag = async (order: Order, newStatus: string) => {
+    setLoadingState(DATA_STATES.waiting);
+    // check if newStatus is one of the status
+    const orderStatusUpdated = await updateOrderStatus(order, newStatus);
+    if (orderStatusUpdated) {
+      const columnKey = order.OrderStatus as keyof OrderData
+      setData({
+        ...data,
+        [columnKey]: data[columnKey].filter(
+            (otherOrder: Order) => otherOrder.OrderID !== order.OrderID
+        ),
+      });
+    }
+    setLoadingState(DATA_STATES.loaded);
+  };
+
   const handleDragEnd = (result: any) => {
     const { source, destination } = result;
     if (!destination) return;
@@ -60,7 +76,9 @@ const HomePage = () => {
 
     const destKey = ID_LIST_MAP[destination.droppableId as keyof IdList] as keyof OrderData;
     const destIndex = destination.index;
-
+    console.log("drag")
+    console.log(destKey)
+    console.log(destIndex)
     if (sourceKey === destKey) {
       const sourceClone = Array.from(data[sourceKey]);
       const [removed] = sourceClone.splice(sourceIndex, 1);
@@ -79,6 +97,8 @@ const HomePage = () => {
           [destKey]: destClone,
         });
     }
+
+    // updateOrderDrag()
   };
 
   useEffect(() => {
@@ -135,6 +155,7 @@ const HomePage = () => {
 
   return (
     <PageWrapper>
+      <h1>Hello world</h1>
       { content }
     </PageWrapper>
   );
